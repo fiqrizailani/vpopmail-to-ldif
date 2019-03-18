@@ -9,7 +9,7 @@ PATH="/tmp"
 OUTPUT="/tmp/final.txt"
 OUTPUT2="/tmp/checkdiff.txt"
 
-OUTPUT3=`/usr/bin/ldapsearch -x -b 'ou=$1,ou=staff,dc=test,dc=com'`
+#OUTPUT3=`/usr/bin/ldapsearch -x -b 'ou=$1,ou=staff,dc=test,dc=com'`
 
 /usr/bin/sudo -u fiqri ssh fiqri@10.1.1.68 '/home/vpopmail/bin/vuserinfo -D' $1 > $V_OUTPUT
 
