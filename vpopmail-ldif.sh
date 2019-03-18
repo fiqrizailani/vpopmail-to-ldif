@@ -9,12 +9,18 @@ PATH="/tmp"
 OUTPUT="/tmp/final.txt"
 OUTPUT2="/tmp/checkdiff.txt"
 
-OUTPUT1=`$VUSERINFO_CMD -D $1 > $V_OUTPUT`
+OUTPUT3=`/usr/bin/ldapsearch -x -b 'ou=$1,ou=staff,dc=test,dc=com'`
+
+/usr/bin/sudo -u fiqri ssh fiqri@10.1.1.68 '/home/vpopmail/bin/vuserinfo -D' $1 > $V_OUTPUT
 
 /bin/sed -n -e '/^name/ p' -e '/^passwd/ p' -e '/^dir/ p' $V_OUTPUT > $PATH/vuserinfo-final.txt
 
+# Insert domain name for mail entry input
+
+echo "domainname: "$1 >> $PATH/vuserinfo-final.txt
+
 if [ -e $OUTPUT ]
-then    
+then
         /bin/mv $OUTPUT-2 $OUTPUT-3
         /bin/mv $OUTPUT $OUTPUT-2
 fi
@@ -37,19 +43,20 @@ fi
                 dir[k]=$2
                 k++
                 }
+                else if ( $1 == "domainname:"){
+                domain=$2
+                }
 }
 END{
  x=1;
  while ( x <= NR/3 ){
-        print "dn: cn=" fullname[x] ",ou=staff,dc=test,dc=com"
+        print "dn: uid=" fullname[x] ",ou="domain",ou=staff,dc=test,dc=com"
         print "objectClass: top"
-        print "objectClass: inetOrgPerson"
         print "objectClass: qmailUser"
-        print "objectClass: person"
-        print "cn: " fullname[x]
-        print "passwd: " alias[x]
-        print "mail: " fullname[x] "@test.com"
-        print "dir: " dir[x] "\n"
+        print "uid: " fullname[x]
+        print "userPassword: " alias[x]
+        print "qmaildomain: " fullname[x]"@"domain
+        print "mailMessageStore: " dir[x] "\n"
         x++
 }
 }' $PATH/vuserinfo-final.txt > $OUTPUT
