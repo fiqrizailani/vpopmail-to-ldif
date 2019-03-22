@@ -12,7 +12,7 @@ OUTPUT3="/tmp/final-2.txt"
 
 domain=$1
 
-/usr/bin/sudo -u fiqri ssh fiqri@10.1.1.68 '/home/vpopmail/bin/vuserinfo -D' $1 > $V_OUTPUT
+/usr/bin/sudo -u vpopmail ssh vpopmail@10.1.1.68 '/home/vpopmail/bin/vuserinfo -D' $1 > $V_OUTPUT
 
 # Trim vuserinfo data to format that we require
 
@@ -47,13 +47,10 @@ echo "domainname: "$1 >> $PATH/vuserinfo-final.txt
 END{
  x=1;
  while ( x <= NR/3 ){
-        print "dn: uid=" fullname[x] ",ou="domain",o=vpopmail,ou=UNIX,dc=test,dc=com"
-        print "uid: " fullname[x]
-        print "qmailUID: 1"
-        print "qmailGID: 0"
-        print "qmaildomain: " fullname[x]"@"domain
+        print "dn: uid=" fullname[x] ",ou="domain",ou=staff,dc=cse,dc=my"
+        print "mail: " fullname[x]"@"domain
         print "mailMessageStore: " dir[x]
-        print "mailQuota: NOQUOTA"
+        print "uid: " fullname[x]
         print "clearPassword: " alias[x]
         print "objectClass: qmailUser\n"
         x++
@@ -62,7 +59,7 @@ END{
 
 # Checking current ldap database and dump it to output
 
-/usr/bin/ldapsearch -LLL -S "cn" -s children -x -b ou=$domain,o=vpopmail,ou=UNIX,dc=test,dc=com > $OUTPUT3
+/usr/bin/ldapsearch -LLL -S "cn" -s children -x -b ou=$domain,ou=staff,dc=cse,dc=my > $OUTPUT3
 
 # Check if ldif have any changes
 
